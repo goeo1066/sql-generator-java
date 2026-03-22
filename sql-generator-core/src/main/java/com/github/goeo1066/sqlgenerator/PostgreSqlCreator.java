@@ -57,6 +57,22 @@ public class PostgreSqlCreator {
         return creator.sqlForCountTotal();
     }
 
+    public String deleteByWhere(String where) {
+        String sql = "DELETE FROM %s WHERE 1 = 1\n".formatted(entityInfo.getFullTableName());
+        if (Utils.isNotBlank(where)) {
+            sql += where;
+        }
+        return sql;
+    }
+
+    public String updateByWhere(String setClause, String where) {
+        String sql = "UPDATE %s SET\n%s\nWHERE 1 = 1\n".formatted(entityInfo.getFullTableName(), setClause);
+        if (Utils.isNotBlank(where)) {
+            sql += where;
+        }
+        return sql;
+    }
+
     // SQL: Insert On Conflict
     private class InsertOnConflictCreator {
         private boolean updateOnConflict = true;
