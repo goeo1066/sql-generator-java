@@ -1,0 +1,4 @@
+rootProject.name = 'sql-generator-java'
+
+include 'sql-generator-core'
+include 'demo'

@@ -1,0 +1,5 @@
+jdk:
+  - 21
+
+install:
+  - ./gradlew :sql-generator-core:publishToMavenLocal

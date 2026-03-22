@@ -1,6 +1,6 @@
-package com.example.demo.database.config;
+package com.github.goeo1066.sqlgenerator.config;
 
-import com.example.demo.database.PostgreSqlJdbcTemplate;
+import com.github.goeo1066.sqlgenerator.PostgreSqlJdbcTemplate;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
