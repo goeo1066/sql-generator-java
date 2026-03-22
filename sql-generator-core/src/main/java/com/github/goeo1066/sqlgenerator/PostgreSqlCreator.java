@@ -1,5 +1,6 @@
 package com.github.goeo1066.sqlgenerator;
 
+import com.github.goeo1066.sqlgenerator.core.SqlCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,13 +8,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class PostgreSqlCreator {
+public class PostgreSqlCreator implements SqlCreator {
     @Getter
     private final EntityInfo entityInfo;
 
     public static <T> PostgreSqlCreator fromClass(Class<T> tClass) {
         EntityInfo info = PostgreSqlUtils.getEntityInfo(tClass);
         return new PostgreSqlCreator(info);
+    }
+
+    @Override
+    public String insertOrUpdate(String pkTarget) {
+        return insertOnConflictDoUpdate(pkTarget);
+    }
+
+    @Override
+    public String insertOrIgnore(String pkTarget) {
+        return insertOnConflictDoNothing(pkTarget);
     }
 
     public String insertOnConflictDoNothing(String pkTarget) {
@@ -34,6 +45,7 @@ public class PostgreSqlCreator {
         return creator.sqlForNamedParameter();
     }
 
+    @Override
     public String selectPaged(SelectSpec selectSpec) {
         SelectCreator creator = new SelectCreator()
                 .orderBy(selectSpec.getOrderBy())
@@ -42,6 +54,7 @@ public class PostgreSqlCreator {
         return creator.sqlForSelect();
     }
 
+    @Override
     public String selectTotal(SelectSpec selectSpec) {
         SelectCreator creator = new SelectCreator()
                 .orderBy(selectSpec.getOrderBy())
@@ -50,6 +63,7 @@ public class PostgreSqlCreator {
         return creator.sqlForSelect();
     }
 
+    @Override
     public String countTotal(SelectSpec selectSpec) {
         SelectCreator creator = new SelectCreator()
                 .where(selectSpec.getWhere())
@@ -57,6 +71,7 @@ public class PostgreSqlCreator {
         return creator.sqlForCountTotal();
     }
 
+    @Override
     public String deleteByPk(String pkTarget) {
         String resolvedPkTarget = pkTarget == null ? "default" : pkTarget;
         List<String> conditions = new ArrayList<>();
@@ -68,6 +83,7 @@ public class PostgreSqlCreator {
         return "DELETE FROM %s WHERE %s".formatted(entityInfo.getFullTableName(), String.join(" AND ", conditions));
     }
 
+    @Override
     public String deleteByWhere(String where) {
         String sql = "DELETE FROM %s WHERE 1 = 1\n".formatted(entityInfo.getFullTableName());
         if (Utils.isNotBlank(where)) {
@@ -76,6 +92,7 @@ public class PostgreSqlCreator {
         return sql;
     }
 
+    @Override
     public String updateByWhere(String setClause, String where) {
         String sql = "UPDATE %s SET\n%s\nWHERE 1 = 1\n".formatted(entityInfo.getFullTableName(), setClause);
         if (Utils.isNotBlank(where)) {
