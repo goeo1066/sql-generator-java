@@ -1,7 +1,6 @@
 package com.github.goeo1066.sqlgenerator.config;
 
 import com.github.goeo1066.sqlgenerator.PostgreSqlJdbcTemplate;
-import com.github.goeo1066.sqlgenerator.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -38,7 +37,7 @@ public class PostgreSqlJdbcTemplateRegistryPostProcessor implements BeanDefiniti
                 bd.getConstructorArgumentValues().addGenericArgumentValue(entityClass);
                 bd.setTargetType(ResolvableType.forClassWithGenerics(PostgreSqlJdbcTemplate.class, entityClass));
 
-                if (Util.isBlank(candidate.getBeanClassName())) {
+                if (candidate.getBeanClassName() == null || candidate.getBeanClassName().isBlank()) {
                     continue;
                 }
 

@@ -5,6 +5,7 @@ import org.springframework.data.relational.core.mapping.event.BeforeConvertCallb
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
@@ -61,31 +62,37 @@ public class PostgreSqlJdbcTemplate<T> {
 
     public List<T> selectPaged(SelectSpec selectSpec) {
         String sql = sqlCreator.selectPaged(selectSpec);
-        List<T> list = jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
-        if (selectSpec.isDirtyCheckingObject()) {
-            return asDirtyCheckingObject(list);
-        }
-        return list;
+        return jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
     }
 
     public List<T> selectTotal(SelectSpec selectSpec) {
         String sql = sqlCreator.selectTotal(selectSpec);
-        List<T> list = jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
-        if (selectSpec.isDirtyCheckingObject()) {
-            return asDirtyCheckingObject(list);
-        }
-        return list;
+        return jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
     }
 
-    private List<T> asDirtyCheckingObject(List<T> source) {
-        if (source == null) {
-            return null;
-        }
-        return source.stream().map(this::asDirtyCheckingObject).toList();
+    public int deleteByPk(T entity, String pkTarget) {
+        String sql = sqlCreator.deleteByPk(pkTarget);
+        SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(entity);
+        return jdbc.update(sql, sqlParameterSource);
     }
 
-    private T asDirtyCheckingObject(T source) {
-        return source;
+    public int deleteByPk(T entity) {
+        return deleteByPk(entity, null);
+    }
+
+    public int deleteByWhere(String where, SqlParameterSource sqlParameterSource) {
+        String sql = sqlCreator.deleteByWhere(where);
+        return jdbc.update(sql, sqlParameterSource);
+    }
+
+    public int deleteByWhere(String where) {
+        String sql = sqlCreator.deleteByWhere(where);
+        return jdbc.update(sql, new MapSqlParameterSource());
+    }
+
+    public int updateByWhere(String setClause, String where, SqlParameterSource sqlParameterSource) {
+        String sql = sqlCreator.updateByWhere(setClause, where);
+        return jdbc.update(sql, sqlParameterSource);
     }
 
     public long countTotal(SelectSpec selectSpec) {

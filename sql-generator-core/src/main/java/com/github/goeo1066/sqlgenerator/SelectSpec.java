@@ -14,7 +14,6 @@ public class SelectSpec {
     private String orderBy;
     private String where;
     private SqlParameterSource sqlParameterSource;
-    private boolean dirtyCheckingObject;
 
     public SelectSpec(
             String orderBy,

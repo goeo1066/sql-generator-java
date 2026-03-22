@@ -16,7 +16,7 @@ public class ColumnInfo {
 
     public String getGetterName() {
         String propertyName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        String prefix = bool ? "is" : "get";
+        String prefix = isBool() ? "is" : "get";
         return prefix + propertyName;
     }
 

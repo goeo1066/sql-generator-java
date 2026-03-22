@@ -57,6 +57,33 @@ public class PostgreSqlCreator {
         return creator.sqlForCountTotal();
     }
 
+    public String deleteByPk(String pkTarget) {
+        String resolvedPkTarget = pkTarget == null ? "default" : pkTarget;
+        List<String> conditions = new ArrayList<>();
+        for (ColumnInfo columnInfo : entityInfo.getColumnInfos()) {
+            if (columnInfo.isPk(resolvedPkTarget)) {
+                conditions.add("%s = :%s".formatted(columnInfo.getColumnName(), columnInfo.getFieldName()));
+            }
+        }
+        return "DELETE FROM %s WHERE %s".formatted(entityInfo.getFullTableName(), String.join(" AND ", conditions));
+    }
+
+    public String deleteByWhere(String where) {
+        String sql = "DELETE FROM %s WHERE 1 = 1\n".formatted(entityInfo.getFullTableName());
+        if (Utils.isNotBlank(where)) {
+            sql += where;
+        }
+        return sql;
+    }
+
+    public String updateByWhere(String setClause, String where) {
+        String sql = "UPDATE %s SET\n%s\nWHERE 1 = 1\n".formatted(entityInfo.getFullTableName(), setClause);
+        if (Utils.isNotBlank(where)) {
+            sql += where;
+        }
+        return sql;
+    }
+
     // SQL: Insert On Conflict
     private class InsertOnConflictCreator {
         private boolean updateOnConflict = true;
@@ -105,24 +132,24 @@ public class PostgreSqlCreator {
         }
 
         private String columnList() {
-            List<String> columnNames = new ArrayList<>(entityInfo.columnInfos().size());
-            for (ColumnInfo columnInfo : entityInfo.columnInfos()) {
+            List<String> columnNames = new ArrayList<>(entityInfo.getColumnInfos().size());
+            for (ColumnInfo columnInfo : entityInfo.getColumnInfos()) {
                 columnNames.add(columnInfo.getColumnName());
             }
             return String.join(",\n", columnNames);
         }
 
         private String fieldList() {
-            List<String> fieldNames = new ArrayList<>(entityInfo.columnInfos().size());
-            for (ColumnInfo columnInfo : entityInfo.columnInfos()) {
+            List<String> fieldNames = new ArrayList<>(entityInfo.getColumnInfos().size());
+            for (ColumnInfo columnInfo : entityInfo.getColumnInfos()) {
                 fieldNames.add(":%s".formatted(columnInfo.getFieldName()));
             }
             return String.join(",\n", fieldNames);
         }
 
         private String onConflictKeyNames() {
-            List<String> columnNames = new ArrayList<>(entityInfo.columnInfos().size());
-            for (ColumnInfo columnInfo : entityInfo.columnInfos()) {
+            List<String> columnNames = new ArrayList<>(entityInfo.getColumnInfos().size());
+            for (ColumnInfo columnInfo : entityInfo.getColumnInfos()) {
                 if (columnInfo.isPk(getPkTarget())) {
                     columnNames.add(columnInfo.getColumnName());
                 }
@@ -131,8 +158,8 @@ public class PostgreSqlCreator {
         }
 
         private String updateList() {
-            List<String> lineList = new ArrayList<>(entityInfo.columnInfos().size());
-            for (ColumnInfo columnInfo : entityInfo.columnInfos()) {
+            List<String> lineList = new ArrayList<>(entityInfo.getColumnInfos().size());
+            for (ColumnInfo columnInfo : entityInfo.getColumnInfos()) {
                 if (columnInfo.isNotOnUpdate()) {
                     continue;
                 }
@@ -172,7 +199,7 @@ public class PostgreSqlCreator {
         }
 
         public SelectCreator orderBy(String orderBy) {
-            if (Util.Strings.isNotBlank(orderBy)) {
+            if (Utils.isNotBlank(orderBy)) {
                 this.orderBy = orderBy;
             } else {
                 this.orderBy = DEFAULT_ORDER_BY;
