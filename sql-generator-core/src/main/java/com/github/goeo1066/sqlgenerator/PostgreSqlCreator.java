@@ -57,6 +57,17 @@ public class PostgreSqlCreator {
         return creator.sqlForCountTotal();
     }
 
+    public String deleteByPk(String pkTarget) {
+        String resolvedPkTarget = pkTarget == null ? "default" : pkTarget;
+        List<String> conditions = new ArrayList<>();
+        for (ColumnInfo columnInfo : entityInfo.getColumnInfos()) {
+            if (columnInfo.isPk(resolvedPkTarget)) {
+                conditions.add("%s = :%s".formatted(columnInfo.getColumnName(), columnInfo.getFieldName()));
+            }
+        }
+        return "DELETE FROM %s WHERE %s".formatted(entityInfo.getFullTableName(), String.join(" AND ", conditions));
+    }
+
     public String deleteByWhere(String where) {
         String sql = "DELETE FROM %s WHERE 1 = 1\n".formatted(entityInfo.getFullTableName());
         if (Utils.isNotBlank(where)) {

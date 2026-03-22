@@ -70,6 +70,16 @@ public class PostgreSqlJdbcTemplate<T> {
         return jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
     }
 
+    public int deleteByPk(T entity, String pkTarget) {
+        String sql = sqlCreator.deleteByPk(pkTarget);
+        SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(entity);
+        return jdbc.update(sql, sqlParameterSource);
+    }
+
+    public int deleteByPk(T entity) {
+        return deleteByPk(entity, null);
+    }
+
     public int deleteByWhere(String where, SqlParameterSource sqlParameterSource) {
         String sql = sqlCreator.deleteByWhere(where);
         return jdbc.update(sql, sqlParameterSource);
