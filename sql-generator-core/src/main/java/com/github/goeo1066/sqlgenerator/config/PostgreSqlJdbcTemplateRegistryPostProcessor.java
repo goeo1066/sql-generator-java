@@ -1,8 +1,7 @@
-package com.example.demo.database.config;
+package com.github.goeo1066.sqlgenerator.config;
 
-
-import com.example.demo.Util;
-import com.example.demo.database.PostgreSqlJdbcTemplate;
+import com.github.goeo1066.sqlgenerator.PostgreSqlJdbcTemplate;
+import com.github.goeo1066.sqlgenerator.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -13,14 +12,16 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.ResolvableType;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
 @Slf4j
-@Component
 public class PostgreSqlJdbcTemplateRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
-    private final String basePackage = "com.avidong.system.avidongserver";
+    private final String basePackage;
+
+    public PostgreSqlJdbcTemplateRegistryPostProcessor(String basePackage) {
+        this.basePackage = basePackage;
+    }
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {

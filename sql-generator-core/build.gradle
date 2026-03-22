@@ -1,0 +1,66 @@
+plugins {
+    id 'java-library'
+    id 'io.spring.dependency-management'
+    id 'maven-publish'
+}
+
+description = 'SQL Generator Core - Spring Data JDBC abstraction with SQL visibility'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:4.0.1"
+    }
+}
+
+dependencies {
+    api 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            groupId = project.group
+            artifactId = 'sql-generator-core'
+            version = project.version
+
+            pom {
+                name = 'SQL Generator Core'
+                description = 'Spring Data JDBC abstraction framework with SQL visibility and database-native operations'
+                url = 'https://github.com/goeo1066/sql-generator-java'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'goeo1066'
+                        name = 'goeo1066'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/goeo1066/sql-generator-java.git'
+                    developerConnection = 'scm:git:ssh://github.com/goeo1066/sql-generator-java.git'
+                    url = 'https://github.com/goeo1066/sql-generator-java'
+                }
+            }
+        }
+    }
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}

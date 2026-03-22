@@ -1,4 +1,4 @@
-package com.example.demo.database;
+package com.github.goeo1066.sqlgenerator;
 
 import lombok.Getter;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
@@ -61,12 +61,31 @@ public class PostgreSqlJdbcTemplate<T> {
 
     public List<T> selectPaged(SelectSpec selectSpec) {
         String sql = sqlCreator.selectPaged(selectSpec);
-        return jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
+        List<T> list = jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
+        if (selectSpec.isDirtyCheckingObject()) {
+            return asDirtyCheckingObject(list);
+        }
+        return list;
     }
 
     public List<T> selectTotal(SelectSpec selectSpec) {
         String sql = sqlCreator.selectTotal(selectSpec);
-        return jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
+        List<T> list = jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
+        if (selectSpec.isDirtyCheckingObject()) {
+            return asDirtyCheckingObject(list);
+        }
+        return list;
+    }
+
+    private List<T> asDirtyCheckingObject(List<T> source) {
+        if (source == null) {
+            return null;
+        }
+        return source.stream().map(this::asDirtyCheckingObject).toList();
+    }
+
+    private T asDirtyCheckingObject(T source) {
+        return source;
     }
 
     public long countTotal(SelectSpec selectSpec) {

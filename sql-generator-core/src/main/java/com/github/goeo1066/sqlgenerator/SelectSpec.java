@@ -1,4 +1,4 @@
-package com.example.demo.database;
+package com.github.goeo1066.sqlgenerator;
 
 import lombok.Data;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -14,6 +14,7 @@ public class SelectSpec {
     private String orderBy;
     private String where;
     private SqlParameterSource sqlParameterSource;
+    private boolean dirtyCheckingObject;
 
     public SelectSpec(
             String orderBy,
