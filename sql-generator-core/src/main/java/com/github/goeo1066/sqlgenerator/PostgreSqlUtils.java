@@ -79,7 +79,6 @@ public class PostgreSqlUtils {
             return null;
         }
 
-
         if (declaredField.accessFlags().contains(AccessFlag.STATIC)) {
             return null;
         }
@@ -98,7 +97,7 @@ public class PostgreSqlUtils {
 
         // Column Name
         String columnName;
-        if (column != null && Util.Strings.isNotBlank(column.value())) {
+        if (column != null && Utils.isNotBlank(column.value())) {
             columnName = column.value();
         } else {
             columnName = fieldNameToColumnName(declaredField.getName());

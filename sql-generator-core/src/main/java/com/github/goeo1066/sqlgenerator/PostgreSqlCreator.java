@@ -105,24 +105,24 @@ public class PostgreSqlCreator {
         }
 
         private String columnList() {
-            List<String> columnNames = new ArrayList<>(entityInfo.columnInfos().size());
-            for (ColumnInfo columnInfo : entityInfo.columnInfos()) {
+            List<String> columnNames = new ArrayList<>(entityInfo.getColumnInfos().size());
+            for (ColumnInfo columnInfo : entityInfo.getColumnInfos()) {
                 columnNames.add(columnInfo.getColumnName());
             }
             return String.join(",\n", columnNames);
         }
 
         private String fieldList() {
-            List<String> fieldNames = new ArrayList<>(entityInfo.columnInfos().size());
-            for (ColumnInfo columnInfo : entityInfo.columnInfos()) {
+            List<String> fieldNames = new ArrayList<>(entityInfo.getColumnInfos().size());
+            for (ColumnInfo columnInfo : entityInfo.getColumnInfos()) {
                 fieldNames.add(":%s".formatted(columnInfo.getFieldName()));
             }
             return String.join(",\n", fieldNames);
         }
 
         private String onConflictKeyNames() {
-            List<String> columnNames = new ArrayList<>(entityInfo.columnInfos().size());
-            for (ColumnInfo columnInfo : entityInfo.columnInfos()) {
+            List<String> columnNames = new ArrayList<>(entityInfo.getColumnInfos().size());
+            for (ColumnInfo columnInfo : entityInfo.getColumnInfos()) {
                 if (columnInfo.isPk(getPkTarget())) {
                     columnNames.add(columnInfo.getColumnName());
                 }
@@ -131,8 +131,8 @@ public class PostgreSqlCreator {
         }
 
         private String updateList() {
-            List<String> lineList = new ArrayList<>(entityInfo.columnInfos().size());
-            for (ColumnInfo columnInfo : entityInfo.columnInfos()) {
+            List<String> lineList = new ArrayList<>(entityInfo.getColumnInfos().size());
+            for (ColumnInfo columnInfo : entityInfo.getColumnInfos()) {
                 if (columnInfo.isNotOnUpdate()) {
                     continue;
                 }
@@ -172,7 +172,7 @@ public class PostgreSqlCreator {
         }
 
         public SelectCreator orderBy(String orderBy) {
-            if (Util.Strings.isNotBlank(orderBy)) {
+            if (Utils.isNotBlank(orderBy)) {
                 this.orderBy = orderBy;
             } else {
                 this.orderBy = DEFAULT_ORDER_BY;

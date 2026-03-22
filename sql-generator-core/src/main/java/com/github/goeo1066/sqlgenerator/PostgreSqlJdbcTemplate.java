@@ -61,31 +61,12 @@ public class PostgreSqlJdbcTemplate<T> {
 
     public List<T> selectPaged(SelectSpec selectSpec) {
         String sql = sqlCreator.selectPaged(selectSpec);
-        List<T> list = jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
-        if (selectSpec.isDirtyCheckingObject()) {
-            return asDirtyCheckingObject(list);
-        }
-        return list;
+        return jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
     }
 
     public List<T> selectTotal(SelectSpec selectSpec) {
         String sql = sqlCreator.selectTotal(selectSpec);
-        List<T> list = jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
-        if (selectSpec.isDirtyCheckingObject()) {
-            return asDirtyCheckingObject(list);
-        }
-        return list;
-    }
-
-    private List<T> asDirtyCheckingObject(List<T> source) {
-        if (source == null) {
-            return null;
-        }
-        return source.stream().map(this::asDirtyCheckingObject).toList();
-    }
-
-    private T asDirtyCheckingObject(T source) {
-        return source;
+        return jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
     }
 
     public long countTotal(SelectSpec selectSpec) {
