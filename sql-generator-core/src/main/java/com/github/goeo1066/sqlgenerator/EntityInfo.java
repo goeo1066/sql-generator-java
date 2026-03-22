@@ -1,6 +1,5 @@
-package com.example.demo.database;
+package com.github.goeo1066.sqlgenerator;
 
-import com.example.demo.Util;
 import lombok.Builder;
 
 import java.util.List;

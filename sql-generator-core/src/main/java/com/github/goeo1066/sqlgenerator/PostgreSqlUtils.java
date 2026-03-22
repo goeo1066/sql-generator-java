@@ -1,8 +1,7 @@
-package com.example.demo.database;
+package com.github.goeo1066.sqlgenerator;
 
-import com.example.demo.Util;
-import com.example.demo.database.annotations.NoUpdate;
-import com.example.demo.database.annotations.Pk;
+import com.github.goeo1066.sqlgenerator.annotations.NoUpdate;
+import com.github.goeo1066.sqlgenerator.annotations.Pk;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;

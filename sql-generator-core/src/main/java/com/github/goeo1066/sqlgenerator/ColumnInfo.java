@@ -1,4 +1,4 @@
-package com.example.demo.database;
+package com.github.goeo1066.sqlgenerator;
 
 import lombok.Data;
 
