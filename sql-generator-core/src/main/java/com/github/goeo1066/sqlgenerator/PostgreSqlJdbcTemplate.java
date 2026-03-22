@@ -1,5 +1,6 @@
 package com.github.goeo1066.sqlgenerator;
 
+import com.github.goeo1066.sqlgenerator.core.SqlJdbcTemplate;
 import lombok.Getter;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -11,7 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.util.List;
 
-public class PostgreSqlJdbcTemplate<T> {
+public class PostgreSqlJdbcTemplate<T> implements SqlJdbcTemplate<T> {
     private final PostgreSqlCreator sqlCreator;
     @Getter
     private final NamedParameterJdbcTemplate jdbc;
@@ -29,6 +30,26 @@ public class PostgreSqlJdbcTemplate<T> {
         this.jdbc = jdbc;
         this.rowMapper = BeanPropertyRowMapper.newInstance(tClass);
         this.beforeConvertCallbacks = beforeConvertCallbacks == null ? List.of() : beforeConvertCallbacks;
+    }
+
+    @Override
+    public void insertOrUpdate(List<T> list, String pkTarget) {
+        insertOnConflictDoUpdate(list, pkTarget);
+    }
+
+    @Override
+    public void insertOrUpdate(List<T> list) {
+        insertOnConflictDoUpdate(list);
+    }
+
+    @Override
+    public void insertOrIgnore(List<T> list, String pkTarget) {
+        insertOnConflictDoNothing(list, pkTarget);
+    }
+
+    @Override
+    public void insertOrIgnore(List<T> list) {
+        insertOnConflictDoNothing(list);
     }
 
     public void insertOnConflictDoUpdate(List<T> list, String pkTarget) {
@@ -51,6 +72,7 @@ public class PostgreSqlJdbcTemplate<T> {
         batchUpdate(list, sql);
     }
 
+    @Override
     public void updateSet(String namedSqlTemplate, SqlParameterSource sqlParameterSource) {
         EntityInfo entityInfo = sqlCreator.getEntityInfo();
         String fullName = entityInfo.getFullTableName();
@@ -60,41 +82,49 @@ public class PostgreSqlJdbcTemplate<T> {
         jdbc.batchUpdate(namedSqlTemplate, new SqlParameterSource[]{sqlParameterSource});
     }
 
+    @Override
     public List<T> selectPaged(SelectSpec selectSpec) {
         String sql = sqlCreator.selectPaged(selectSpec);
         return jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
     }
 
+    @Override
     public List<T> selectTotal(SelectSpec selectSpec) {
         String sql = sqlCreator.selectTotal(selectSpec);
         return jdbc.query(sql, selectSpec.getSqlParameterSource(), getRowMapper());
     }
 
+    @Override
     public int deleteByPk(T entity, String pkTarget) {
         String sql = sqlCreator.deleteByPk(pkTarget);
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(entity);
         return jdbc.update(sql, sqlParameterSource);
     }
 
+    @Override
     public int deleteByPk(T entity) {
         return deleteByPk(entity, null);
     }
 
+    @Override
     public int deleteByWhere(String where, SqlParameterSource sqlParameterSource) {
         String sql = sqlCreator.deleteByWhere(where);
         return jdbc.update(sql, sqlParameterSource);
     }
 
+    @Override
     public int deleteByWhere(String where) {
         String sql = sqlCreator.deleteByWhere(where);
         return jdbc.update(sql, new MapSqlParameterSource());
     }
 
+    @Override
     public int updateByWhere(String setClause, String where, SqlParameterSource sqlParameterSource) {
         String sql = sqlCreator.updateByWhere(setClause, where);
         return jdbc.update(sql, sqlParameterSource);
     }
 
+    @Override
     public long countTotal(SelectSpec selectSpec) {
         String sql = sqlCreator.countTotal(selectSpec);
         Long cnt = jdbc.queryForObject(sql, selectSpec.getSqlParameterSource(), Long.class);
